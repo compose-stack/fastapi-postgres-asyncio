@@ -1,0 +1,6 @@
+version: 1
+stack:
+  service-name: cs-fastapi-pg-async-api
+  service-port: 8150
+  components: backend
+  api-architecture: rest

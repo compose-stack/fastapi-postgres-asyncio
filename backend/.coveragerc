@@ -1,0 +1,17 @@
+[run]
+branch = True
+omit = 
+    */__init__.py
+    alembic/* 
+    fastapi_server/models.py 
+    fastapi_server/apps/core/logger.py 
+    fastapi_server/apps/notifications/mail.py 
+    fastapi_server/init/* 
+    fastapi_server/lib/async_io.py
+    fastapi_server/lib/logs.py
+    fastapi_server/scripts/* 
+    fastapi_server/tests/* 
+
+concurrency =
+    greenlet
+    thread
