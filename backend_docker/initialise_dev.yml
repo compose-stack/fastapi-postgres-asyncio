@@ -16,3 +16,10 @@ operations:
   - chmod:
     - '0750'
     - docker_data_dev/postgres
+- name: "After starting the dev environment with
+    `docker compose -f docker-compose.dev.yml up`
+    run the following commands"
+  commands:
+  - print:
+    - docker compose -f docker-compose.dev.yml exec cs-fastapi-pg-async-api-dev alembic upgrade head
+    - color: dark_orange

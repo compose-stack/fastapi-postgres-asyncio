@@ -4,6 +4,7 @@ echo "This script will generate the necessary files to run development docker."
 echo "Run the build and the up the container by passing also the overrides file:\n"
 echo "docker compose -f docker-compose.dev.yml build;"
 echo "docker compose -f docker-compose.dev.yml up;"
+echo "docker compose -f docker-compose.dev.yml exec cs-fastapi-pg-async-api-dev alembic upgrade head;"
 
 echo "\nInitializing:"
 
