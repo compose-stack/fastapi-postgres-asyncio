@@ -29,7 +29,7 @@ registration quickly with latest technology based on Python and React.
 Development:
 
 ```bash
-. docker/initialise_dev.sh
+. backend_docker/initialise_dev.sh
 docker compose -f docker-compose.dev.yml build
 docker compose -f docker-compose.dev.yml up
 docker compose -f docker-compose.dev.yml exec cs-fastapi-pg-async-api-dev alembic upgrade head
@@ -67,7 +67,7 @@ needs to be setup.
 Before running "build & run", run the following command:
 
 ```sh
-. docker/initialise_dev.sh
+. backend_docker/initialise_dev.sh
 ```
 
 This commands creates the necessary folders mapped in the docker
