@@ -8,7 +8,7 @@ services:
     volumes:
       - ./docker_data_dev/postgres/data:/var/lib/postgresql/data
     env_file:
-      - ./docker/config/.env.postgres.dev
+      - ./backend_docker/config/.env.postgres.dev
 
   cs-fastapi-pg-async-api-dev:
     container_name: cs-fastapi-pg-async-api-dev
@@ -25,6 +25,6 @@ services:
     ports:
       - "8150:8150"
     env_file:
-      - ./docker/config/.env.backend.dev
-      - ./docker/config/.env.backend.dev.overrides
+      - ./backend_docker/config/.env.backend.dev
+      - ./backend_docker/config/.env.backend.dev.overrides
     command: uvicorn fastapi_server.main:app --reload --workers 1 --host 0.0.0.0 --port 8150
