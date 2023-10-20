@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   cs-fastapi-pg-async-postgres-dev:
-    build: ./docker/postgres
+    build: ./backend_docker/postgres
     ports:
       - "6432:5432"
     volumes:
