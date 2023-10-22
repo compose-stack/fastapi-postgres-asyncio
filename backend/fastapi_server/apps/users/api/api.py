@@ -4,6 +4,7 @@ from fastapi import (
     APIRouter,
     Body,
     HTTPException,
+    Response,
     status,
     Depends,
 )
@@ -249,9 +250,9 @@ async def login(
         )
 
     # Generate tokens
-    response = await core.generate_authentication_tokens(user)
-    response["access_token_expiration"] = SETTINGS["ACCESS_TOKEN_EXPIRE_SECONDS"]
-    response["refresh_token_expiration"] = SETTINGS["REFRESH_TOKEN_EXPIRE_SECONDS"]
+    resp = (await core.generate_authentication_tokens(user)).model_dump()
+    resp["access_token_expiration"] = SETTINGS["ACCESS_TOKEN_EXPIRE_SECONDS"]
+    resp["refresh_token_expiration"] = SETTINGS["REFRESH_TOKEN_EXPIRE_SECONDS"]
 
     logger.info(
         f"User logged in",
@@ -259,7 +260,28 @@ async def login(
         user_id=user.id,
     )
 
-    return JSONResponse(status_code=status.HTTP_200_OK, content=response)
+    response = JSONResponse(status_code=status.HTTP_200_OK, content=resp)
+    if SETTINGS["ACCESS_TOKEN_VIA_COOKIE"]:
+        response.set_cookie(
+            key="auth",
+            value=resp["access_token"],
+            expires=resp["access_token_expiration"],
+            max_age=resp["access_token_expiration"],
+            httponly=True,
+            samesite=SETTINGS["ACCESS_TOKEN_COOKIE_SAME_SITE"],
+            secure=SETTINGS["ACCESS_TOKEN_COOKIE_SECURE"],
+        )
+        del resp["access_token"]
+    return response
+
+
+@router.delete("/logout", name=f"auth:login:logout", responses=login_responses)
+async def logout(
+    response: Response,
+):
+    if SETTINGS["ACCESS_TOKEN_COOKIE_DELETE_ON_LOGOUT"]:
+        response.delete_cookie("auth")
+    return {"status": "success"}
 
 
 @router.post(
@@ -298,16 +320,27 @@ async def refresh_tokens(
             detail=str(ErrorCode.REFRESH_TOKEN_INVALID),
         )
 
-    response = {
+    resp = {
         "access_token": access_token,
         "access_token_expiration": SETTINGS["ACCESS_TOKEN_EXPIRE_SECONDS"],
         "token_type": "bearer",
     }
 
-    return JSONResponse(
+    response = JSONResponse(
         status_code=status.HTTP_200_OK,
-        content=response,
+        content=resp,
     )
+    if SETTINGS["ACCESS_TOKEN_VIA_COOKIE"]:
+        response.set_cookie(
+            key="auth",
+            value=resp["access_token"],
+            expires=resp["access_token_expiration"],
+            httponly=True,
+            samesite=SETTINGS["ACCESS_TOKEN_COOKIE_SAME_SITE"],
+            secure=SETTINGS["ACCESS_TOKEN_COOKIE_SECURE"],
+        )
+        del resp["access_token"]
+    return response
 
 
 @router.post(

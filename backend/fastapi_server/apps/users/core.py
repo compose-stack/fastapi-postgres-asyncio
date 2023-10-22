@@ -1,8 +1,9 @@
 from asyncio import sleep
 from random import randint
-from typing import Optional
+from typing import Literal, Optional
 from uuid import uuid4, UUID
 
+from pydantic import BaseModel
 from structlog import get_logger
 
 from fastapi_server.lib.dates import now
@@ -210,12 +211,18 @@ def generate_refresh_token(user_id: str):
     )
 
 
-async def generate_authentication_tokens(user: UserTokens):
-    return {
-        "access_token": generate_access_token(user),
-        "refresh_token": generate_refresh_token(user.id),
-        "token_type": "bearer",
-    }
+class AuthenticationTokens(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: Literal["bearer"]
+
+
+async def generate_authentication_tokens(user: UserTokens) -> AuthenticationTokens:
+    return AuthenticationTokens(
+        access_token=generate_access_token(user),
+        refresh_token=generate_refresh_token(user.id),
+        token_type="bearer",
+    )
 
 
 async def validate_refresh_token(token: str):
